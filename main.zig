@@ -1,30 +1,13 @@
 const std = @import("std");
-const zap = @import("zap");
-
-fn on_request(r: zap.Request) void {
-    if (r.path) |the_path| {
-        std.debug.print("PATH: {s}\n", .{the_path});
-    }
-
-    if (r.query) |the_query| {
-        std.debug.print("QUERY: {s}\n", .{the_query});
-    }
-    r.sendBody("<html><body><h1>Hello from Tenfins!!!</h1></body></html>") catch return;
-}
+const c = @cImport({
+    @cInclude("libpq-fe.h");
+});
 
 pub fn main() !void {
-    var listener = zap.HttpListener.init(.{
-        .port = 3000,
-        .on_request = on_request,
-        .log = true,
-    });
-    try listener.listen();
-
-    std.debug.print("Listening on localhost:3000\n", .{});
-
-    // start worker threads
-    zap.start(.{
-        .threads = 2,
-        .workers = 2,
-    });
+    const conn = c.PQconnectdb("dbname = tenfins");
+    if (conn == null) {
+        std.debug.print("Failed to connect to db", .{});
+        return;
+    }
+    std.debug.print("Successfully to db", .{});
 }

@@ -1,7 +1,7 @@
 .{
     .name = "Tenfins Zap Server",
     .version = "0.0.1",
-
+    .paths = .{""},
     .dependencies = .{
         // zap v0.5.1
         .zap = .{
